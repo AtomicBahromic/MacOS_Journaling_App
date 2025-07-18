@@ -49,6 +49,20 @@ class DataController {
         return m
       }
     
+    var todayEntries: [Entry] {
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+        return allEntries.filter {
+            $0.date >= startOfDay && $0.date < nextDay
+        }
+    }
+    
+    var allEntries: [Entry] {
+        return try! dbQueue.read { db in
+            try Entry.fetchAll(db)
+        }
+    }
+    
 }
 
 struct Entry: Codable, FetchableRecord, PersistableRecord {

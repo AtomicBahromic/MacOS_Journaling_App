@@ -12,6 +12,9 @@ struct ContentView: View {
     var body: some View {
         ScrollView{
         LazyVStack {
+            Title().padding()
+            vm.isDone ? Text("Done For Today! 🎉").font(.title) : Text("")
+            Streak(vm: vm)
             EntryForm()
                 .environmentObject(vm)
         }
@@ -35,6 +38,7 @@ struct EntryForm: View {
         
         Button("Save") { vm.saveEntry()}
             .padding(30)
+            .disabled(!vm.isFilled)
     }
 }
 
