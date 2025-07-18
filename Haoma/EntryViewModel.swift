@@ -20,6 +20,26 @@ class EntryViewModel: ObservableObject {
     @Published var BestWorstLikely = ["","",""]
     @Published var reasons = ["","",""]
     
+    init() {
+        if self.isDone {
+            let entries = loadEntry()
+            valueStatements = entries[0]
+            supportive = entries[1]
+            obstructive = entries[2]
+            BestWorstLikely = entries[3]
+            reasons = entries[4]
+        }
+    }
+    
+    func loadEntry() -> [[String]]{
+        let entries = DataController.shared.todayEntries
+        let valuesStatements = entries.prefix(4).map(\.Statement)
+        let supportive = entries[4..<9].map(\.Statement)
+        let obstructive = entries[8..<12].map(\.Statement)
+        let BestWorstLikely = entries[12..<15].map(\.Statement)
+        let reasons = entries[15..<18].map(\.Statement)
+        return [valuesStatements, supportive, obstructive, BestWorstLikely, reasons]
+    }
     
     func saveEntry(){
         let inputs = [valueStatements, supportive, obstructive, BestWorstLikely, reasons]
@@ -30,11 +50,6 @@ class EntryViewModel: ObservableObject {
                 DataController.shared.enter(cue: cues[i][j], statement: inputs[i][j])
             }
         }
-        valueStatements = ["","","",""]
-        supportive = ["","","",""]
-        obstructive = ["", "","",""]
-        BestWorstLikely = ["","",""]
-        reasons = ["","",""]
     }
     
     var isFilled: Bool{
