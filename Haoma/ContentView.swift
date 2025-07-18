@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var vm = EntryViewModel()
     var body: some View {
         ScrollView{
         LazyVStack {
             EntryForm()
+                .environmentObject(vm)
         }
         .padding()}
     }
 }
 
 struct EntryForm: View {
-    @StateObject private var vm = EntryViewModel()
+    @EnvironmentObject private var vm: EntryViewModel
     
     var body: some View {
         ValuesEntry(cues:vm.valueCues, statements: $vm.valueStatements)

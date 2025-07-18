@@ -15,12 +15,20 @@ class EntryViewModel: ObservableObject {
     let reasonsCues = ["Reason for Success #1", "Reason for Success #2", "Reason for Success #3"]
     
     @Published var valueStatements = ["","","",""]
-    @Published var reasons = ["","",""]
     @Published var supportive = ["","","",""]
     @Published var obstructive = ["", "","",""]
     @Published var BestWorstLikely = ["","",""]
+    @Published var reasons = ["","",""]
     
     func saveEntry(){
+        var inputs = [valueStatements, supportive, obstructive, BestWorstLikely, reasons]
+        let cues = [valueCues, objectiveCues, avoidanceCues, predictionCues, reasonsCues]
         
+        for i in 0..<inputs.count{
+            for j in 0..<inputs[i].count{
+                DataController.shared.enter(cue: cues[i][j], statement: inputs[i][j])
+                inputs[i][j] = ""
+            }
+        }
     }
 }
