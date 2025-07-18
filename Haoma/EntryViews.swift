@@ -56,19 +56,17 @@ struct GoalInputs: View {
     @Binding var statements: [String]
     var body: some View {
         VStack{
-            Section("Primary Objective"){
-                VStack{
-                    Text("What is my primary objective for today?")
-                    TextField("e.g. I wanna enrol into my university courses at 2pm", text: $statements[0])
-                        .journalStyle()
-                }.padding(20)
-                
-                Text("How does the objective help me?")
-                ForEach(0..<3) { i in
-                    TextField("\(i+1)", text: $statements[i+1])
-                        .journalStyle()
-                }.padding(2)
-            }
+            VStack{
+                Text("What is my primary goal for today?")
+                TextField("e.g. I wanna enrol into my university courses at 2pm", text: $statements[0])
+                    .journalStyle()
+            }.padding(20)
+            
+            Text("Why does it help me?")
+            ForEach(0..<3) { i in
+                TextField("\(i+1)", text: $statements[i+1])
+                    .journalStyle()
+            }.padding(2)
         }.padding(10)
     }
 }
