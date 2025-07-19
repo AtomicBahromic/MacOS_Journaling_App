@@ -88,3 +88,8 @@ class EntryViewModel: ObservableObject {
         return count
     }
 }
+
+
+enum Route: Hashable {
+    case today, history, settings
+}

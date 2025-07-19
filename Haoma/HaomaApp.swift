@@ -11,7 +11,7 @@ import SwiftUI
 struct HaomaApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationManagerView()
         }
     }
 }

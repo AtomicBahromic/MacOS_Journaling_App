@@ -14,6 +14,21 @@ struct Title: View {
     }
 }
 
+struct Today: View {
+    @EnvironmentObject private var vm: EntryViewModel
+    var body: some View {
+                ScrollView{
+                LazyVStack {
+                    Title().padding()
+                    vm.isDone ? Text("Done For Today! 🎉").font(.title) : Text("")
+                    Streak(vm: vm)
+                    EntryForm()
+                        .environmentObject(vm)
+                }
+                .padding()}
+    }
+}
+
 struct Streak: View {
     let vm: EntryViewModel
     var body: some View {

@@ -10,15 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var vm = EntryViewModel()
     var body: some View {
-        ScrollView{
-        LazyVStack {
-            Title().padding()
-            vm.isDone ? Text("Done For Today! 🎉").font(.title) : Text("")
-            Streak(vm: vm)
-            EntryForm()
-                .environmentObject(vm)
-        }
-        .padding()}
+        Today()
+            .environmentObject(vm)
     }
 }
 
