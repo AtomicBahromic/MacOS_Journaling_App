@@ -47,9 +47,9 @@ class DataController {
     }
 #endif
     
-    public func enter(cue: String, statement: String) {
-        let e = Entry(id: nil, date: Date(), Prompt: cue, Statement: statement)
-        let success: ()? = try? dbQueue?.write { db in
+    public func enter(cue: String, statement: String, formId: Int64? = nil) {
+        let e = Entry(id: nil, date: Date(), Prompt: cue, Statement: statement, formId: formId)
+        let success: ()? = try? dbQueue.write { db in
             try e.insert(db)
         }
         
@@ -119,8 +119,20 @@ extension DataController {
         } ?? 0
     }
     
+    // Create a new form row and return its autoincremented id
+    func createForm(formType: String? = nil) throws {
+        let form = Form(id: nil, createdAt: Date(), formType: formType)
+        try dbQueue.write { db in
+            try form.insert(db)   // after insert, form.id is populated
+        }          // safe because insert sets the id
+    }
     
-
+    // Read the latest form (most-recent id)
+    func latestForm() throws -> Form? {
+        try dbQueue.read { db in
+            try Form.order(Column("id").desc).fetchOne(db)
+        }
+    }
     
 }
 
