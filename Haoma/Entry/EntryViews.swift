@@ -172,21 +172,31 @@ struct DevControlsView: View {
     @State private var showingConfirm = false
     var body: some View {
 #if DEBUG
-        Button("Wipe DB (dev only)") { showingConfirm = true }
-            .foregroundColor(.red)
-            .alert("Delete database?", isPresented: $showingConfirm) {
-                Button("Delete", role: .destructive) {
-                    do {
-                        try DataController.shared.wipeDatabaseForDevelopment()
-                        print("DB wiped")
-                    } catch {
-                        print("Wipe failed:", error)
+        HStack{
+            
+            Button("Wipe DB (dev only)") { showingConfirm = true }
+                .foregroundColor(.red)
+                .alert("Delete database?", isPresented: $showingConfirm) {
+                    Button("Delete", role: .destructive) {
+                        do {
+                            try DataController.shared.wipeDatabaseForDevelopment()
+                            print("DB wiped")
+                        } catch {
+                            print("Wipe failed:", error)
+                        }
                     }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("This will permanently delete all local data. Only for development.")
                 }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This will permanently delete all local data. Only for development.")
+            Button("Print DB") {
+                let entries = DataController.shared.allEntries
+                for entry in entries {
+                    print("ID: \(entry.id ?? 0) , Date:\(entry.date), FormID:\(entry.formId ?? 0)")
+                }
             }
+        }
+        
 #else
         EmptyView()
 #endif
