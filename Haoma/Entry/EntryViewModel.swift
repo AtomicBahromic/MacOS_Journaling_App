@@ -35,14 +35,26 @@ class EntryViewModel: ObservableObject {
     }
     
     func saveEntry(){
+        do {
+            try DataController.shared.createForm(formType: "daily")
+        }
+        catch {
+            print("failed to insert form")
+            return
+        }
+        
+        // 2) save each prompt response with that formId (or nil if creation failed)
+        
+        let formId = (try? DataController.shared.latestForm()?.id ?? 1) ?? -1
         let inputs = [valueStatements, supportive, strategies]
         let cues = [valueCues, objectiveCues, strategies]
         
-        for i in 0..<inputs.count{
-            for j in 0..<inputs[i].count{
-                DataController.shared.enter(cue: cues[i][j], statement: inputs[i][j])
+        for i in 0..<inputs.count {
+            for j in 0..<inputs[i].count {
+                DataController.shared.enter(cue: cues[i][j], statement: inputs[i][j], formId: Int64(formId))
             }
         }
+        print(formId)
         self.isDone = true
     }
     
