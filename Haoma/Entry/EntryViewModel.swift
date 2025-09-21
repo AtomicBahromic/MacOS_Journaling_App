@@ -8,52 +8,58 @@
 import Foundation
 
 class EntryViewModel: ObservableObject {
-    let valueCues = ["What is the one thing I wanna accomplish in life?", "What kind of life do I wanna live?", "What kind of body do I want?", "What kind of mind do I want?"]
+    let valueCues = ["What matters to you in this world?", "What is your duty on this planet?", "What would your ideal life look like?"]
     let objectiveCues = ["What is my primary goal for today?", "Helpful Reason #1", "Helpful Reason #2", "Helpful Reason #3"]
-    let avoidanceCues = ["What is the one thing I avoid doing?", "Reason #1", "Reason #2", "Reason #3"]
-    let predictionCues = ["Best Case", "Worst Case", "Most Likely"]
-    let reasonsCues = ["Reason for Success #1", "Reason for Success #2", "Reason for Success #3"]
+    let strategyCue = ["What's one thing I can do right now to affect the day?", "What is ONE effect of that action?"]
     
-    @Published var valueStatements = ["","","",""]
-    @Published var supportive = ["","","",""]
-    @Published var obstructive = ["", "","",""]
-    @Published var BestWorstLikely = ["","",""]
-    @Published var reasons = ["","",""]
+    @Published var valueStatements = ["","",""]
+    @Published var supportive = ["","",""]
+    @Published var strategies = ["", ""]
+    @Published var isDone = !DataController.shared.todayEntries.isEmpty
     
     init() {
-        if self.isDone {
+        if (self.isDone) {
             let entries = loadEntry()
             valueStatements = entries[0]
             supportive = entries[1]
-            obstructive = entries[2]
-            BestWorstLikely = entries[3]
-            reasons = entries[4]
+            strategies = entries[2]
         }
     }
     
     func loadEntry() -> [[String]]{
         let entries = DataController.shared.todayEntries
-        let valuesStatements = entries.prefix(4).map(\.Statement)
-        let supportive = entries[4..<9].map(\.Statement)
-        let obstructive = entries[8..<12].map(\.Statement)
-        let BestWorstLikely = entries[12..<15].map(\.Statement)
-        let reasons = entries[15..<18].map(\.Statement)
-        return [valuesStatements, supportive, obstructive, BestWorstLikely, reasons]
+        let valuesStatements = entries.prefix(3).map(\.Statement)
+        let supportive = entries[3..<7].map(\.Statement)
+        let strategies = [entries[6].Statement, entries[7].Statement]
+        return [valuesStatements, supportive, strategies]
     }
     
     func saveEntry(){
-        let inputs = [valueStatements, supportive, obstructive, BestWorstLikely, reasons]
-        let cues = [valueCues, objectiveCues, avoidanceCues, predictionCues, reasonsCues]
+        let inputs = [valueStatements, supportive, strategies]
+        let cues = [valueCues, objectiveCues, strategies]
         
         for i in 0..<inputs.count{
             for j in 0..<inputs[i].count{
                 DataController.shared.enter(cue: cues[i][j], statement: inputs[i][j])
             }
         }
+        self.isDone = true
+    }
+    
+    func deleteEntries(){
+        do {
+            try DataController.shared.deleteEntries(on: Date())
+        } catch {
+            print("error deleting entries")
+        }
+        self.isDone = false
+        valueStatements = ["","",""]
+        supportive = ["","",""]
+        strategies = ["", ""]
     }
     
     var isFilled: Bool{
-        let inputs = [valueStatements, supportive, obstructive, BestWorstLikely, reasons]
+        let inputs = [valueStatements, supportive, strategies]
         for inputType in inputs{
             if inputType.contains(where: {$0.isEmpty}){
                 return false
@@ -62,7 +68,7 @@ class EntryViewModel: ObservableObject {
         return true
     }
     
-    var isDone: Bool{!DataController.shared.todayEntries.isEmpty}
+    
     
     var streak: Int{
         // Start with 1 if there’s an entry today, otherwise 0
