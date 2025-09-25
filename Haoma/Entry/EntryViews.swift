@@ -47,9 +47,11 @@ struct Today: View {
         LazyVStack {
             HStack{
                 Spacer()
+#if DEBUG
                 Button("Delete Entries") {
                     vm.deleteEntries()
                 }
+#endif
             }
             
             Text("Morning Reflection")
@@ -94,53 +96,22 @@ struct Streak: View {
 }
 
 
-struct ValuesEntry: View {
+
+struct JournalEntries: View {
     let cues: [String]
     @Binding var statements: [String]
     
     var body: some View {
-        ForEach(0..<3) { i in
-            TextField(cues[i], text: $statements[i]).padding(.vertical, 10)
-                .journalStyle()
+        ForEach(cues.indices, id: \.self) { i in
+            VStack{
+                Text(cues[i])
+                    .padding(4)
+                TextField("", text: $statements[i])
+                    .journalStyle()
+            }
         }
     }
 }
-
-struct GoalInputs: View {
-    @Binding var statements: [String]
-    var body: some View {
-        VStack{
-            VStack{
-                Text("What is my primary goal for today?")
-                TextField("e.g. I wanna enrol into my university courses at 2pm", text: $statements[0])
-                    .journalStyle()
-            }.padding(20)
-            
-            Text("Why does it help me?")
-            ForEach(0..<2) { i in
-                TextField("\(i+1)", text: $statements[i+1])
-                    .journalStyle()
-            }.padding(.vertical, 2)
-        }.padding(.vertical, 10)
-    }
-}
-
-struct StratEntry: View {
-    @Binding var statements: [String]
-    var body: some View {
-        VStack{
-            VStack{
-                Text("What is a single thing you can do right now to change your day?")
-                TextField("", text: $statements[0])
-                    .journalStyle()
-            }.padding(.vertical, 10)
-            Text("How would that affect things?")
-            TextField("", text: $statements[1])
-                .journalStyle()
-        }.padding(.vertical, 10)
-    }
-}
-
 
 extension View {
     func journalStyle() -> some View {
@@ -156,11 +127,9 @@ struct EntryForm: View {
     @EnvironmentObject var vm: EntryViewModel
     
     var body: some View {
-        ValuesEntry(cues:vm.valueCues, statements: $vm.valueStatements)
         
-        GoalInputs(statements: $vm.supportive)
-        
-        StratEntry(statements: $vm.strategies)
+        JournalEntries(cues: JournalForms.morning.entries, statements: $vm.statements)
+            .padding(.vertical, 10)
         
         Button("Save") { vm.saveEntry()}
             .padding(30)
