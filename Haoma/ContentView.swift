@@ -41,7 +41,7 @@ struct ContentView: View{
         } detail: {
             switch selectedSidebarItem{
                 case .Journal:
-                    JournalViews()
+                    EntrySelectionView()
                 case .Calendar:
                     Text("Calendar")
                 case .Meditation:

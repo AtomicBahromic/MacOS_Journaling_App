@@ -9,13 +9,13 @@ import Foundation
 
 @MainActor
 final class EntryViewModel: ObservableObject {
-    let form: JournalForms
+    let form: FormType
     
     @Published var statements: [String] = []
     @Published var isDone = !DataController.shared.todayEntries.isEmpty
     
     
-    init(form: JournalForms){
+    init(form: FormType){
         self.form = form
         statements = Array(repeating: "", count: self.form.entries.count)
     }
@@ -23,7 +23,7 @@ final class EntryViewModel: ObservableObject {
     
     func saveEntry(){
         do {
-            try DataController.shared.createForm(formType: "daily") // make formType dynamic
+            try DataController.shared.createForm(formType: form.name) // make formType dynamic
         }
         catch {
             print("failed to insert form")
