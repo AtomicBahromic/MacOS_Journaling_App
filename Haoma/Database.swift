@@ -103,7 +103,6 @@ class DataController {
             try Entry.fetchAll(db)
         } ?? []
     }
-    
 }
 
 extension DataController {
@@ -134,6 +133,12 @@ extension DataController {
         }
     }
     
+    // DataController method
+    func fetchAllForms() throws -> [Form] {
+        try dbQueue.read { db in
+            try Form.order(Column("createdAt").desc).fetchAll(db)
+        }
+    }
 }
 
 struct Form: Codable, FetchableRecord, PersistableRecord {
