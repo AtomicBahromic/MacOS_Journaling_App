@@ -8,7 +8,6 @@ import SwiftUI
 
 struct JournalViews: View {
     @State var path = NavigationPath()
-    @StateObject var vm = EntryViewModel()
     
     var body: some View {
         
@@ -26,13 +25,18 @@ struct JournalViews: View {
                     .padding(.vertical, 10)
                     .cornerRadius(10)
             }
+            Button(action: {path.append(JournalForms.night)}){
+                Text("Night Reflection")
+                    .font(.system(size: 20, weight: .bold))
+                    .padding(.horizontal, 50)
+                    .padding(.vertical, 10)
+                    .cornerRadius(10)
+            }
         }
         .navigationDestination(for: JournalForms.self){ form in
             switch form {
-            case JournalForms.morning: Today().environmentObject(vm)
-                
-                case JournalForms.night:
-                    Text("Night")
+            case JournalForms.morning: MorningForm()
+            case JournalForms.night: NightForm()
                 
             }
         }
@@ -40,8 +44,8 @@ struct JournalViews: View {
     }
 }
 
-struct Today: View {
-    @EnvironmentObject var vm: EntryViewModel
+struct MorningForm: View {
+    @StateObject var vm = EntryViewModel(form: .morning)
     var body: some View {
         ScrollView{
         LazyVStack {
@@ -63,10 +67,39 @@ struct Today: View {
                 .environmentObject(vm)
             EntryForm()
                 .environmentObject(vm)
-                .disabled(vm.isDone)
             
         }
         .padding()}
+    }
+}
+
+
+struct NightForm: View {
+    @StateObject var vm = EntryViewModel(form: .night)
+    var body: some View {
+        ScrollView{
+            LazyVStack {
+                HStack{
+                    Spacer()
+#if DEBUG
+                    Button("Delete Entries") {
+                        vm.deleteEntries()
+                    }
+#endif
+                }
+                
+                Text("Morning Reflection")
+                    .font(.system(size: 36, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding()
+                vm.isDone ? Text("Done For Today! 🎉").font(.title) : Text("")
+                Streak()
+                    .environmentObject(vm)
+                EntryForm()
+                    .environmentObject(vm)
+                
+            }
+            .padding()}
     }
 }
 
@@ -128,7 +161,7 @@ struct EntryForm: View {
     
     var body: some View {
         
-        JournalEntries(cues: JournalForms.morning.entries, statements: $vm.statements)
+        JournalEntries(cues: vm.form.entries, statements: $vm.statements)
             .padding(.vertical, 10)
         
         Button("Save") { vm.saveEntry()}
@@ -142,7 +175,6 @@ struct DevControlsView: View {
     var body: some View {
 #if DEBUG
         HStack{
-            
             Button("Wipe DB (dev only)") { showingConfirm = true }
                 .foregroundColor(.red)
                 .alert("Delete database?", isPresented: $showingConfirm) {

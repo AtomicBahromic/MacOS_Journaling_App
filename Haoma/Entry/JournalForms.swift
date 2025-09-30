@@ -12,9 +12,9 @@ enum JournalForms {
     var entries: [String] {
         switch self {
         case .morning:
-            return ["What matters to you in this world?", "What is your duty on this planet?", "What would your ideal life look like?", "What is my primary goal for today?", "How is that helpful?", "What is one thing you can do to build momentum towards your goals?", "What is one thing you're grateful for right now?"]
+            return ["What do you feel right now?", "Why do you think you feel like that?" ,"How do you feel like reacting to that feeling?", "What is your duty on this planet?", "What does a day in your ideal life look like?", "What is your primary goal for today?", "How is that helpful?", "What is one thing you can do to build momentum towards your goals?", "What is one thing you're grateful for right now?"]
         case .night:
-            return ["Reflection", "Wins", "Improvements"]
+            return ["Reflection", "Wins", "Improvements"] // change this to be more sophisticated.
         }
     }
 }
