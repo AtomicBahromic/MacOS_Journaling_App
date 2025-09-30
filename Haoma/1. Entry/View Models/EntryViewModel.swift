@@ -7,28 +7,37 @@
 
 import Foundation
 
-class EntryViewModel: ObservableObject {
+@MainActor
+final class EntryViewModel: ObservableObject {
+    let form: FormType
     
-    @Published var statements = Array(repeating: "", count: JournalForms.morning.entries.count)
+    @Published var statements: [String] = []
     @Published var isDone = !DataController.shared.todayEntries.isEmpty
+    
+    
+    init(form: FormType){
+        self.form = form
+        statements = Array(repeating: "", count: self.form.entries.count)
+    }
+    
     
     func saveEntry(){
         do {
-            try DataController.shared.createForm(formType: "daily")
+            try DataController.shared.createForm(formType: form.name) // make formType dynamic
         }
         catch {
             print("failed to insert form")
             return
         }
-        // 2) save each prompt response with that formId (or nil if creation failed)
         
         let formId = (try? DataController.shared.latestForm()?.id ?? 1) ?? -1
         
-        for i in 0..<self.statements.count {
-            DataController.shared.enter(cue: JournalForms.morning.entries[i], statement: statements[i], formId: Int64(formId))
+        for i in 0..<self.form.entries.count {
+            DataController.shared.enter(cue: self.form.entries[i], statement: statements[i], formId: Int64(formId))
         }
         print(formId)
         self.isDone = true
+        statements = Array(repeating: "", count: self.form.entries.count)
     }
     
     func deleteEntries(){
@@ -38,20 +47,17 @@ class EntryViewModel: ObservableObject {
             print("error deleting entries")
         }
         self.isDone = false
-        statements = Array(repeating: "", count: JournalForms.morning.entries.count)
+        statements = Array(repeating: "", count: self.form.entries.count)
     }
     
     var isFilled: Bool{!self.statements.contains("")}
     
     
     var streak: Int{
-        // Start with 1 if there’s an entry today, otherwise 0
         var count = 0
         let entries = DataController.shared.allEntries
         let calendar = Calendar.current
 
-        // Keep going back one more day for each count,
-        // and stop once there’s no entry on that day.
         while entries.contains(where: {
             calendar.isDate(
                 $0.date,

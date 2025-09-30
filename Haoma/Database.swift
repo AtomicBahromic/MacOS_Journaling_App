@@ -147,7 +147,7 @@ struct Entry: Codable, FetchableRecord, PersistableRecord {
     var date: Date
     var Prompt: String
     var Statement: String
-    var formId: Int64?      // new: links to Form.id
+    var formId: Int64?
 }
 
 
